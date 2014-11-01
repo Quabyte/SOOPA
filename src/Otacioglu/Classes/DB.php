@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * This is the DB class.
+ *
+ * @author  Orçun Otacıoğlu <otacioglu.orcun@gmail.com>
+ * @copyright 2014 Orçun Otacıoğlu
+ */
 class DB
 {
 	/**
@@ -138,7 +144,7 @@ class DB
 	}
 
 	/**
-	 * Selecting objects from a table using the action( method)
+	 * Selecting objects from a table using the action() method.
 	 * @param  string $table Table name.
 	 * @param  array  $where Table column and operators performing a query.
 	 * @return object  
@@ -159,6 +165,124 @@ class DB
 	{
 		// Deletes the selected objects.
 		return $this->action('DELETE', $table, $where);
+	}
+
+	/**
+	 * Insert an object to the database.
+	 * @param  string $table  Table name to work with.
+	 * @param  array  $fields Fields to create.
+	 * @return boolean         If the object inserted into DB successfully this will return true.
+	 */
+	public function insert($table, $fields = array())
+	{
+		// Checks if the user granted the fields for creation.
+		if(count($fields)) {
+
+			// Selects the table column names.
+			$keys = array_keys($fields);
+
+			// This is necessary for binding parameters with the query.
+			$values = '';
+
+			// Helper property.
+			$x = 1;
+
+			// Prepares parameters for binding.
+			foreach($fields as $field){
+
+				$values .= "?";
+
+				// Checks the provided parameter count and seperates each of them with a comma.
+				if($x < count($fields)) {
+
+					$values .= ', ';
+				}
+
+				$x++;
+			}
+
+			// The proper format is already set. Thus we don't need $values anymore.
+			die($values);
+
+			// The actual SQL query for inserting parameters into selected table.
+			$sql = "INSERT INTO {$table} (`" . implode('`, `', $keys) . "`) VALUES ({$values})";
+
+			// Checks if the query has failed or not.
+			if(!$this->query($sql, $fields)->error()){
+
+				// If the query success.
+				return true;
+			}
+		}
+
+		// If the query failed.
+		return false;
+	}
+
+	/**
+	 * Update an existing object.
+	 * @param  string $table   Table name.
+	 * @param  integer $id     Object ID.
+	 * @param  array $fields   Parameters for update.
+	 * @return boolean         If the query fails this will return false. Otherwise it will update the database.
+	 */
+	public function update($table, $id, $fields)
+	{
+		// This is necessary for binding parameters to the query.
+		$set = '';
+
+		// Helper property.
+		$x = 1;
+
+		// Prepares the provided parameters for binding.
+		foreach($fields as $index => $value) {
+
+			// Formats the table column names for binding.
+			$set .= "{$index} = ?";
+
+				// Checks the provided parameter count and seperates each of them with a comma.
+				if($x < count($fields)) {
+
+					$set .= ', ';
+				}
+
+			$x++;
+		}
+
+		// The proper format is already set. Thus we don't need $set anymore 
+		die($set);
+
+		// The actual SQL query for updating provided parameters with provided values.
+		$sql = "UPDATE {$table} SET {$set} WHERE id = {$id}";
+
+		// Checks if the query is successfull.
+		if(!$this->query($sql, $fields)->error()) {
+
+			// If the query run successfully.
+			return true;
+		}
+
+		// If the query fails.
+		return false;
+	}
+
+	/**
+	 * Returns query results.
+	 * @return object 
+	 */
+	public function results()
+	{
+		return $this->_results;
+	}
+
+	/**
+	 * Returns the specified result by order.
+	 * @param  integer $order 
+	 * @return object        
+	 */
+	public function getResult($order)
+	{
+		return $this->results()[$order];
 	}
 
 	/**
