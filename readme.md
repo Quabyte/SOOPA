@@ -7,6 +7,8 @@ SOOPA is a simple authentication system with Login and Register events. The clas
 Completed Classes list:
 - DB class
 - Config class
+- Validation class
+- Input class
 
 ### License
 The SOOPA package is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
